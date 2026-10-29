@@ -1,0 +1,35 @@
+name: Build WorldEconomy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Extract project
+        run: |
+          unzip -o WorldEconomy-1.16.5-with-3x3-pickaxe.zip -d extracted
+
+      - name: Build plugin
+        run: mvn -B -f extracted/WorldEconomy/pom.xml package
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: WorldEconomy-Plugin
+          path: extracted/WorldEconomy/target/*.jar
